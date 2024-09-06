@@ -1,15 +1,7 @@
+import styles from "./ProductCard.module.css";
 export function ProductCard({ product, background = "slategray", onPurchase }) {
   return (
-    <article
-      style={{
-        background,
-        width: "100%",
-        border: "1px solid white",
-        borderRadius: "8px",
-        padding: "16px",
-        textAlign: "center",
-      }}
-    >
+    <article style={{ background }} className={styles.Container}>
       <h2>{product.title}</h2>
       <img
         src={product.imageSrc}
@@ -18,7 +10,7 @@ export function ProductCard({ product, background = "slategray", onPurchase }) {
         height={128}
       />
       <p>Specification:</p>
-      <ul style={{ listStyle: "none", padding: 0 }}>
+      <ul className={styles.Specification}>
         {product.specification.map((spec, index) => (
           <li key={index}>{spec}</li>
         ))}
@@ -35,12 +27,10 @@ export function ProductCard({ product, background = "slategray", onPurchase }) {
 
 function Status({ stockCount }) {
   const notAvailableTemplate = (
-    <p style={{ fontSize: "14px", color: "lightsalmon" }}>not available</p>
+    <p className={styles.NotAvailableStatus}>not available</p>
   );
   const availableTemplate = (
-    <p style={{ fontSize: "14px", color: "lightgreen" }}>
-      {stockCount} items available
-    </p>
+    <p className={styles.AvailableStatus}>{stockCount} items available</p>
   );
   return stockCount === 0 ? notAvailableTemplate : availableTemplate;
 }
