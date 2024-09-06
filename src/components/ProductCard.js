@@ -1,20 +1,46 @@
-export function ProductCard() {
+export function ProductCard({ product, background = "slategray", onPurchase }) {
   return (
-    <article>
-      <h2>iPhone 15 Pro</h2>
+    <article
+      style={{
+        background,
+        width: "100%",
+        border: "1px solid white",
+        borderRadius: "8px",
+        padding: "16px",
+        textAlign: "center",
+      }}
+    >
+      <h2>{product.title}</h2>
       <img
-        src="images/iphone.png"
-        alt="iPhone 15 Pro"
-        width="128px"
-        height="128px"
+        src={product.imageSrc}
+        alt={product.title}
+        width={128}
+        height={128}
       />
       <p>Specification:</p>
-      <ul>
-        <li>A17 Pro chip with 6-core GPU</li>
-        <li>3x or 5x Telephoto camera</li>
-        <li>Up to 29 hours video payback</li>
+      <ul style={{ listStyle: "none", padding: 0 }}>
+        {product.specification.map((spec, index) => (
+          <li key={index}>{spec}</li>
+        ))}
       </ul>
-      <button>Buy (From $999)</button>
+      <Status stockCount={product.stockCount} />
+      {product.stockCount > 0 && (
+        <button onClick={() => onPurchase(product)}>
+          Buy (From ${product.price})
+        </button>
+      )}
     </article>
   );
+}
+
+function Status({ stockCount }) {
+  const notAvailableTemplate = (
+    <p style={{ fontSize: "14px", color: "lightsalmon" }}>not available</p>
+  );
+  const availableTemplate = (
+    <p style={{ fontSize: "14px", color: "lightgreen" }}>
+      {stockCount} items available
+    </p>
+  );
+  return stockCount === 0 ? notAvailableTemplate : availableTemplate;
 }
