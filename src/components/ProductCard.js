@@ -1,19 +1,30 @@
 import { useState } from "react";
 import styles from "./ProductCard.module.css";
-export function ProductCard({ product, background = "slategray", onPurchase }) {
-  const [stockCount, setStockCount] = useState(product.stockCount);
+
+export function ProductCard({
+  product,
+  background = "slategray",
+  isFavourite,
+  onPurchase,
+  onFavourite,
+}) {
   const [showMore, setShowMore] = useState(false);
   function handleClick() {
-    setStockCount((prevStockCount) => prevStockCount - 1);
-    onPurchase(product);
+    onPurchase(product.id, product.stockCount - 1);
   }
 
   function handleTwoClicks() {
-    setStockCount((prevStockCount) => prevStockCount - 2);
+    onPurchase(product.id, product.stockCount - 2);
   }
 
   return (
     <article style={{ background }} className={styles.Container}>
+      <button
+        className={styles.Favourite}
+        onClick={() => onFavourite(product.id)}
+      >
+        {isFavourite ? "❤️" : "🤍"}
+      </button>
       <h2>{product.title}</h2>
       <img
         src={product.imageSrc}
@@ -34,14 +45,16 @@ export function ProductCard({ product, background = "slategray", onPurchase }) {
           ))}
         </ul>
       )}
-      <Status stockCount={stockCount} />
-      {stockCount > 0 && (
+      <Status stockCount={product.stockCount} />
+      {product.stockCount > 0 && (
         <>
           <p>Price: ${product.price}</p>
           <button onClick={handleClick}>Buy</button>
         </>
       )}
-      {stockCount > 1 && <button onClick={handleTwoClicks}>Buy 2</button>}
+      {product.stockCount > 1 && (
+        <button onClick={handleTwoClicks}>Buy 2</button>
+      )}
     </article>
   );
 }

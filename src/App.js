@@ -1,48 +1,47 @@
+import { useState } from "react";
 import { Fragment } from "react";
 import styles from "./App.module.css";
 import { ProductList } from "./components/ProductList";
-import { ProductCard } from "./components/ProductCard";
-
+import { ProductCard } from "./components/ProductCard.js";
+import { ProductFilter } from "./components/ProductFilter.js";
+import { products as productsData } from "./data/products.js";
 function App() {
-  const products = [
-    {
-      imageSrc: "images/iphone.png",
-      title: "iPhone 15 Pro",
-      specification: [
-        "A17 Pro chip with 6-core GPU",
-        "3x or 5x Telephoto camera",
-        "Up to 29 hours video payback",
-      ],
-      price: 999,
-      stockCount: 10,
+  const [products, setProducts] = useState(productsData);
+  const [filters, setFilters] = useState({
+    price: {
+      min: 0,
+      max: 999,
     },
-    {
-      imageSrc: "images/apple.png",
-      title: "Aplle Watch 9",
-      specification: [
-        "Aplle Watch chip with 6-core GPU",
-        "3x or 5x Telephoto camera",
-        "Up to 29 hours video payback",
-      ],
-      price: 400,
-      stockCount: 0,
-    },
-    {
-      imageSrc: "images/earphone.png",
-      title: "Air Pods",
-      specification: [
-        "A17 Pods chip with 6-core GPU",
-        "3x or 5x Telephoto camera",
-        "Up to 29 hours video payback",
-      ],
-      price: 599,
-      stockCount: 6,
-    },
-  ];
-  function handlePurchase(product) {
-    alert(`You clicked on ${product.title} which cost $${product.price}`);
+    other: "other value",
+  });
+  const [favourites, setFavourites] = useState([]);
+  function handlePurchase(productId, stockCount) {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productId ? { ...product, stockCount } : product
+      )
+    );
   }
 
+  function handleFilter(key, value) {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      price: {
+        ...prevFilters.price,
+        [key]: value,
+      },
+    }));
+  }
+
+  function handleFavourite(productId) {
+    if (favourites.includes(productId)) {
+      setFavourites((prevFavourites) =>
+        prevFavourites.filter((id) => id !== productId)
+      );
+    } else {
+      setFavourites((prevFavourites) => [...prevFavourites, productId]);
+    }
+  }
   return (
     <div className={styles.App}>
       <ProductList>
@@ -50,15 +49,21 @@ function App() {
           <ProductCard
             key={product.title}
             product={product}
+            isFavourite={favourites.includes(product.id)}
             onPurchase={handlePurchase}
+            onFavourite={handleFavourite}
           />
         ))}
       </ProductList>
 
-      <h2>Product which cost up to $500</h2>
+      <h2>Products filteres by price</h2>
+      <ProductFilter filters={filters} onFilter={handleFilter} />
 
       {products
-        .filter(({ price }) => price < 500)
+        .filter(
+          ({ price }) =>
+            price >= filters.price.min && price <= filters.price.max
+        )
         .map(({ title, price }) => (
           <Fragment key={title}>
             <hr className={styles.ListDivider} />
